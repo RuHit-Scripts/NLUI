@@ -12,11 +12,33 @@ local RunService = game:GetService("RunService")
 
 local NLUI = {}
 
+-- Lucide icons rendered from a shared sprite sheet (rbxassetid + ImageRect).
+-- Each entry: { assetId, x, y } with a fixed 48x48 cell. Names are the tab `icon` arg.
+local ICON_SHEET_CELL = Vector2.new(48, 48)
 local ICONS = {
-	crosshair = "\u{2316}", mouse = "\u{1F5B1}", camera = "\u{1F4F7}",
-	inventory = "\u{1F4E6}", gear = "\u{2699}", eye = "\u{1F441}",
-	sword = "\u{2694}", bolt = "\u{26A1}", shield = "\u{1F6E1}",
+	crosshair = {16898613044, 453, 869}, target = {16898613869, 514, 771},
+	mouse = {16898613613, 563, 918}, pointer = {16898613777, 869, 661},
+	camera = {16898612819, 967, 563}, image = {16898613509, 306, 918}, eye = {16898613353, 771, 563},
+	inventory = {16898613613, 918, 196}, box = {16898612819, 771, 196}, layers = {16898613509, 98, 967},
+	gear = {16898613777, 771, 257}, sliders = {16898613777, 404, 771}, cog = {16898613777, 771, 257},
+	sword = {16898613777, 967, 759}, bolt = {16898613869, 918, 906}, shield = {16898613777, 869, 0},
+	user = {16898613869, 661, 869}, list = {16898613509, 869, 808}, search = {16898613699, 918, 857},
+	monitor = {16898613613, 404, 820}, cpu = {16898613044, 196, 869}, radar = {16898613699, 820, 404},
+	sparkles = {16898613777, 918, 49}, bell = {16898612819, 820, 257}, lock = {16898613509, 918, 857},
+	key = {16898613509, 869, 404}, wifi = {16898613869, 869, 808}, flag = {16898613353, 98, 918},
+	gamepad = {16898613353, 710, 967}, bot = {16898612819, 869, 98}, bug = {16898612819, 257, 967},
+	pencil = {16898613699, 820, 257}, palette = {16898613613, 453, 918}, focus = {16898613353, 771, 759},
 }
+
+local function setIcon(label, name, size)
+	local ic = ICONS[name]
+	if not ic then label.Image = ""; return end
+	size = size or 18
+	label.Image = "rbxassetid://" .. ic[1]
+	label.ImageRectSize = ICON_SHEET_CELL
+	label.ImageRectOffset = Vector2.new(ic[2], ic[3])
+	label.ScaleType = Enum.ScaleType.Slice
+end
 
 local function inst(class, props)
 	local o = Instance.new(class)
@@ -80,25 +102,25 @@ function NLUI.new(opts)
 	})
 
 	local root = inst("Frame", {
-		Size = UDim2.fromOffset(860, 520),
-		Position = UDim2.fromScale(0.5, 0.5) - UDim2.fromOffset(430, 260),
+		Size = UDim2.fromOffset(680, 430),
+		Position = UDim2.fromScale(0.5, 0.5) - UDim2.fromOffset(340, 215),
 		BackgroundColor3 = COL_BG, BorderSizePixel = 0, ClipsDescendants = true, Parent = gui,
 	})
-	corner(root, 12); stroke(root, COL_LINE, 1)
+	corner(root, 10); stroke(root, COL_LINE, 1)
 
 	local side = inst("Frame", {
-		Size = UDim2.fromOffset(200, 1), BackgroundColor3 = COL_BG, BorderSizePixel = 0, Parent = root,
+		Size = UDim2.fromOffset(160, 1), BackgroundColor3 = COL_BG, BorderSizePixel = 0, Parent = root,
 	})
-	pad(side, 12, 12, 12, 12)
-	inst("UIListLayout", { SortOrder = Enum.SortOrder.LayoutOrder, Padding = UDim.new(0, 4), Parent = side })
+	pad(side, 10, 10, 10, 10)
+	inst("UIListLayout", { SortOrder = Enum.SortOrder.LayoutOrder, Padding = UDim.new(0, 3), Parent = side })
 
 	local body = inst("ScrollingFrame", {
-		Size = UDim2.new(1, -200, 1, 0), Position = UDim2.fromOffset(200, 0),
+		Size = UDim2.new(1, -160, 1, 0), Position = UDim2.fromOffset(160, 0),
 		BackgroundTransparency = 1, BorderSizePixel = 0, ScrollBarThickness = 4,
 		AutomaticCanvasSize = Enum.AutomaticSize.Y, CanvasSize = UDim2.new(), Parent = root,
 	})
-	pad(body, 16, 16, 12, 16)
-	inst("UIListLayout", { SortOrder = Enum.SortOrder.LayoutOrder, Padding = UDim.new(0, 12), Parent = body })
+	pad(body, 12, 12, 10, 12)
+	inst("UIListLayout", { SortOrder = Enum.SortOrder.LayoutOrder, Padding = UDim.new(0, 8), Parent = body })
 
 	local headerSlot = inst("Frame", { Size = UDim2.new(1, 0, 0, 40), BackgroundTransparency = 1, Parent = body })
 	inst("UIListLayout", { FillDirection = Enum.FillDirection.Horizontal, VerticalAlignment = Enum.VerticalAlignment.Center, SortOrder = Enum.SortOrder.LayoutOrder, Padding = UDim.new(0, 8), Parent = headerSlot })
@@ -184,29 +206,29 @@ function NLUI.new(opts)
 	local W = {}
 
 	local function rowBase(parent, h)
-		return inst("Frame", { Size = UDim2.new(1, 0, 0, h or 40), BackgroundTransparency = 1, Parent = parent })
+		return inst("Frame", { Size = UDim2.new(1, 0, 0, h or 32), BackgroundTransparency = 1, Parent = parent })
 	end
 
 	function W.toggle(parent, label, def, cb)
 		local r = rowBase(parent)
 		inst("TextLabel", {
-			Size = UDim2.new(1, -70, 1, 0), BackgroundTransparency = 1, Font = Enum.Font.GothamMedium,
-			TextSize = 15, TextColor3 = COL_TEXT, TextXAlignment = Enum.TextXAlignment.Left, Text = label, Parent = r,
+			Size = UDim2.new(1, -60, 1, 0), BackgroundTransparency = 1, Font = Enum.Font.GothamMedium,
+			TextSize = 14, TextColor3 = COL_TEXT, TextXAlignment = Enum.TextXAlignment.Left, Text = label, Parent = r,
 		})
 		local sw = inst("Frame", {
-			Size = UDim2.fromOffset(44, 24), AnchorPoint = Vector2.new(1, 0.5), Position = UDim2.new(1, 0, 0.5, 0),
+			Size = UDim2.fromOffset(38, 20), AnchorPoint = Vector2.new(1, 0.5), Position = UDim2.new(1, 0, 0.5, 0),
 			BackgroundColor3 = def and COL_BLUE or COL_PILL, BorderSizePixel = 0, Parent = r,
 		})
-		corner(sw, 12)
+		corner(sw, 10)
 		local knob = inst("Frame", {
-			Size = UDim2.fromOffset(18, 18), Position = UDim2.fromOffset(def and 23 or 3, 3), BackgroundColor3 = Color3.new(1, 1, 1),
+			Size = UDim2.fromOffset(14, 14), Position = UDim2.fromOffset(def and 21 or 3, 3), BackgroundColor3 = Color3.new(1, 1, 1),
 			BorderSizePixel = 0, Parent = sw,
 		})
 		corner(knob, 9)
 		local state = def and true or false
 		local function paint()
 			sw.BackgroundColor3 = state and COL_BLUE or COL_PILL
-			knob.Position = state and UDim2.fromOffset(23, 3) or UDim2.fromOffset(3, 3)
+			knob.Position = state and UDim2.fromOffset(21, 3) or UDim2.fromOffset(3, 3)
 		end
 		inst("TextButton", { Size = UDim2.fromScale(1, 1), BackgroundTransparency = 1, Text = "", Parent = r }).MouseButton1Click:Connect(function()
 			state = not state; paint(); if cb then pcall(cb, state) end
@@ -220,10 +242,10 @@ function NLUI.new(opts)
 		local r = rowBase(parent, 34)
 		inst("TextLabel", {
 			Size = UDim2.new(0.5, 0, 1, 0), BackgroundTransparency = 1, Font = Enum.Font.GothamMedium,
-			TextSize = 15, TextColor3 = COL_TEXT, TextXAlignment = Enum.TextXAlignment.Left, Text = label, Parent = r,
+			TextSize = 14, TextColor3 = COL_TEXT, TextXAlignment = Enum.TextXAlignment.Left, Text = label, Parent = r,
 		})
 		local track = inst("Frame", {
-			Size = UDim2.new(0, 150, 0, 6), Position = UDim2.new(0.5, 0, 0.5, -3),
+			Size = UDim2.new(0, 130, 0, 5), Position = UDim2.new(0.5, 0, 0.5, -3),
 			BackgroundColor3 = COL_PILL, BorderSizePixel = 0, Parent = r,
 		})
 		corner(track, 3)
@@ -235,7 +257,7 @@ function NLUI.new(opts)
 		})
 		corner(grab, 7)
 		local pill = inst("TextLabel", {
-			Size = UDim2.fromOffset(58, 22), AnchorPoint = Vector2.new(1, 0.5), Position = UDim2.new(1, 0, 0.5, 0),
+			Size = UDim2.fromOffset(52, 20), AnchorPoint = Vector2.new(1, 0.5), Position = UDim2.new(1, 0, 0.5, 0),
 			BackgroundColor3 = COL_PILL, Font = Enum.Font.GothamMedium, TextSize = 13, TextColor3 = COL_TEXT,
 			Text = tostring(val)..suffix, BorderSizePixel = 0, Parent = r,
 		})
@@ -273,10 +295,10 @@ function NLUI.new(opts)
 		local r = rowBase(holder, 36)
 		inst("TextLabel", {
 			Size = UDim2.new(0.5, 0, 1, 0), BackgroundTransparency = 1, Font = Enum.Font.GothamMedium,
-			TextSize = 15, TextColor3 = COL_TEXT, TextXAlignment = Enum.TextXAlignment.Left, Text = label, Parent = r,
+			TextSize = 14, TextColor3 = COL_TEXT, TextXAlignment = Enum.TextXAlignment.Left, Text = label, Parent = r,
 		})
 		local box = inst("TextButton", {
-			Size = UDim2.fromOffset(150, 28), AnchorPoint = Vector2.new(1, 0.5), Position = UDim2.new(1, 0, 0.5, 0),
+			Size = UDim2.fromOffset(130, 26), AnchorPoint = Vector2.new(1, 0.5), Position = UDim2.new(1, 0, 0.5, 0),
 			BackgroundColor3 = COL_PILL, Text = "", AutoButtonColor = false, BorderSizePixel = 0, Parent = r,
 		})
 		corner(box, 7)
@@ -289,7 +311,7 @@ function NLUI.new(opts)
 			Size = UDim2.fromOffset(16, 28), AnchorPoint = Vector2.new(1, 0), Position = UDim2.new(1, -8, 0, 0),
 			BackgroundTransparency = 1, Font = Enum.Font.GothamBold, TextSize = 14, TextColor3 = COL_MUTED, Text = ">", Parent = box,
 		})
-		local list = inst("Frame", { Size = UDim2.fromOffset(150, 0), AnchorPoint = Vector2.new(1, 0), Position = UDim2.new(1, 0, 1, 4), AutomaticSize = Enum.AutomaticSize.Y, Visible = false, BackgroundColor3 = COL_CARD, BorderSizePixel = 0, Parent = r })
+		local list = inst("Frame", { Size = UDim2.fromOffset(130, 0), AnchorPoint = Vector2.new(1, 0), Position = UDim2.new(1, 0, 1, 4), AutomaticSize = Enum.AutomaticSize.Y, Visible = false, BackgroundColor3 = COL_CARD, BorderSizePixel = 0, Parent = r })
 		corner(list, 7); stroke(list, COL_LINE, 1); list.ZIndex = 10; pad(list, 4, 4, 4, 4)
 		inst("UIListLayout", { SortOrder = Enum.SortOrder.LayoutOrder, Padding = UDim.new(0, 2), Parent = list })
 		for i, opt in ipairs(options) do
@@ -310,10 +332,10 @@ function NLUI.new(opts)
 		local r = rowBase(parent, 36)
 		inst("TextLabel", {
 			Size = UDim2.new(0.5, 0, 1, 0), BackgroundTransparency = 1, Font = Enum.Font.GothamMedium,
-			TextSize = 15, TextColor3 = COL_TEXT, TextXAlignment = Enum.TextXAlignment.Left, Text = label, Parent = r,
+			TextSize = 14, TextColor3 = COL_TEXT, TextXAlignment = Enum.TextXAlignment.Left, Text = label, Parent = r,
 		})
 		local box = inst("TextButton", {
-			Size = UDim2.fromOffset(150, 28), AnchorPoint = Vector2.new(1, 0.5), Position = UDim2.new(1, 0, 0.5, 0),
+			Size = UDim2.fromOffset(130, 26), AnchorPoint = Vector2.new(1, 0.5), Position = UDim2.new(1, 0, 0.5, 0),
 			BackgroundColor3 = COL_PILL, Text = "", AutoButtonColor = false, BorderSizePixel = 0, Parent = r,
 		})
 		corner(box, 7)
@@ -339,10 +361,10 @@ function NLUI.new(opts)
 		local r = rowBase(holder, 36)
 		inst("TextLabel", {
 			Size = UDim2.new(0.5, 0, 1, 0), BackgroundTransparency = 1, Font = Enum.Font.GothamMedium,
-			TextSize = 15, TextColor3 = COL_TEXT, TextXAlignment = Enum.TextXAlignment.Left, Text = label, Parent = r,
+			TextSize = 14, TextColor3 = COL_TEXT, TextXAlignment = Enum.TextXAlignment.Left, Text = label, Parent = r,
 		})
 		local box = inst("TextButton", {
-			Size = UDim2.fromOffset(150, 28), AnchorPoint = Vector2.new(1, 0.5), Position = UDim2.new(1, 0, 0.5, 0),
+			Size = UDim2.fromOffset(130, 26), AnchorPoint = Vector2.new(1, 0.5), Position = UDim2.new(1, 0, 0.5, 0),
 			BackgroundColor3 = COL_PILL, Text = "", AutoButtonColor = false, BorderSizePixel = 0, Parent = r,
 		})
 		corner(box, 7)
@@ -355,7 +377,7 @@ function NLUI.new(opts)
 			Size = UDim2.fromOffset(16, 28), AnchorPoint = Vector2.new(1, 0), Position = UDim2.new(1, -8, 0, 0),
 			BackgroundTransparency = 1, Font = Enum.Font.GothamBold, TextSize = 14, TextColor3 = COL_MUTED, Text = ">", Parent = box,
 		})
-		local list = inst("Frame", { Size = UDim2.fromOffset(150, 0), AnchorPoint = Vector2.new(1, 0), Position = UDim2.new(1, 0, 1, 4), AutomaticSize = Enum.AutomaticSize.Y, Visible = false, BackgroundColor3 = COL_CARD, BorderSizePixel = 0, Parent = r })
+		local list = inst("Frame", { Size = UDim2.fromOffset(130, 0), AnchorPoint = Vector2.new(1, 0), Position = UDim2.new(1, 0, 1, 4), AutomaticSize = Enum.AutomaticSize.Y, Visible = false, BackgroundColor3 = COL_CARD, BorderSizePixel = 0, Parent = r })
 		corner(list, 7); stroke(list, COL_LINE, 1); list.ZIndex = 10; pad(list, 4, 4, 4, 4)
 		inst("UIListLayout", { SortOrder = Enum.SortOrder.LayoutOrder, Padding = UDim.new(0, 2), Parent = list })
 		local function refresh()
@@ -386,11 +408,11 @@ function NLUI.new(opts)
 		local r = rowBase(parent, 36)
 		inst("TextLabel", {
 			Size = UDim2.new(1, -160, 1, 0), BackgroundTransparency = 1, Font = Enum.Font.GothamMedium,
-			TextSize = 15, TextColor3 = COL_TEXT, TextXAlignment = Enum.TextXAlignment.Left, Text = label, Parent = r,
+			TextSize = 14, TextColor3 = COL_TEXT, TextXAlignment = Enum.TextXAlignment.Left, Text = label, Parent = r,
 		})
 		local cur = key or Enum.KeyCode.Unknown
 		local box = inst("TextButton", {
-			Size = UDim2.fromOffset(150, 28), AnchorPoint = Vector2.new(1, 0.5), Position = UDim2.new(1, 0, 0.5, 0),
+			Size = UDim2.fromOffset(130, 26), AnchorPoint = Vector2.new(1, 0.5), Position = UDim2.new(1, 0, 0.5, 0),
 			BackgroundColor3 = COL_PILL, Text = cur.Name, Font = Enum.Font.GothamMedium, TextSize = 13,
 			TextColor3 = COL_TEXT, AutoButtonColor = false, BorderSizePixel = 0, Parent = r,
 		})
@@ -419,7 +441,7 @@ function NLUI.new(opts)
 			})
 		end
 		local c = inst("Frame", { Size = UDim2.new(1, 0, 0, 0), AutomaticSize = Enum.AutomaticSize.Y, BackgroundColor3 = COL_CARD, BorderSizePixel = 0, LayoutOrder = #self._cards * 2 + 1, Parent = self._frame })
-		corner(c, 10); stroke(c, COL_LINE, 1); pad(c, 12, 12, 10, 12)
+		corner(c, 8); stroke(c, COL_LINE, 1); pad(c, 10, 10, 8, 10)
 		inst("UIListLayout", { SortOrder = Enum.SortOrder.LayoutOrder, Padding = UDim.new(0, 6), Parent = c })
 		table.insert(self._cards, c)
 		return setmetatable({ _parent = c }, { __index = function(_, k) return W[k] end })
@@ -433,30 +455,31 @@ function NLUI.new(opts)
 		end
 
 		local tabBtn = inst("TextButton", {
-			Size = UDim2.new(1, 0, 0, 42), BackgroundColor3 = COL_BG, Text = "", AutoButtonColor = false, BorderSizePixel = 0, LayoutOrder = order + 1, Parent = side,
+			Size = UDim2.new(1, 0, 0, 34), BackgroundColor3 = COL_BG, Text = "", AutoButtonColor = false, BorderSizePixel = 0, LayoutOrder = order + 1, Parent = side,
 		})
-		corner(tabBtn, 8)
+		corner(tabBtn, 7)
 		local activeBg = inst("Frame", { Size = UDim2.fromScale(1, 1), BackgroundColor3 = COL_ROW, BorderSizePixel = 0, Visible = false, Parent = tabBtn })
-		corner(activeBg, 8)
-		inst("TextLabel", {
-			Size = UDim2.fromOffset(24, 42), Position = UDim2.fromOffset(10, 0), BackgroundTransparency = 1,
-			Font = Enum.Font.GothamMedium, TextSize = 17, TextColor3 = COL_TEXT, Text = (icon and ICONS[icon]) or "\u{2022}", Parent = tabBtn,
+		corner(activeBg, 7)
+		local iconImg = inst("ImageLabel", {
+			Size = UDim2.fromOffset(16, 16), Position = UDim2.fromOffset(10, 9), BackgroundTransparency = 1,
+			ImageColor3 = COL_TEXT, ScaleType = Enum.ScaleType.Fit, Parent = tabBtn,
 		})
+		setIcon(iconImg, icon, 16)
 		inst("TextLabel", {
-			Size = UDim2.new(1, -50, 1, 0), Position = UDim2.fromOffset(40, 0), BackgroundTransparency = 1,
-			Font = Enum.Font.GothamMedium, TextSize = 15, TextColor3 = COL_TEXT, TextXAlignment = Enum.TextXAlignment.Left, Text = name, Parent = tabBtn,
+			Size = UDim2.new(1, -44, 1, 0), Position = UDim2.fromOffset(34, 0), BackgroundTransparency = 1,
+			Font = Enum.Font.GothamMedium, TextSize = 14, TextColor3 = COL_TEXT, TextXAlignment = Enum.TextXAlignment.Left, Text = name, Parent = tabBtn,
 		})
 
 		local page = inst("Frame", { Size = UDim2.new(1, 0, 0, 0), AutomaticSize = Enum.AutomaticSize.Y, BackgroundTransparency = 1, Visible = false, Parent = body })
 		page.LayoutOrder = order + 2
 		local cols = inst("Frame", { Size = UDim2.new(1, 0, 0, 0), AutomaticSize = Enum.AutomaticSize.Y, BackgroundTransparency = 1, Parent = page })
-		inst("UIListLayout", { FillDirection = Enum.FillDirection.Horizontal, SortOrder = Enum.SortOrder.LayoutOrder, Padding = UDim.new(0, 12), Parent = cols })
+		inst("UIListLayout", { FillDirection = Enum.FillDirection.Horizontal, SortOrder = Enum.SortOrder.LayoutOrder, Padding = UDim.new(0, 10), Parent = cols })
 
 		local tabObj = { _page = page, _cols = {}, _colCount = 0 }
 		function tabObj:column()
 			tabObj._colCount = tabObj._colCount + 1
-			local colFrame = inst("Frame", { Size = UDim2.new(0.5, -6, 0, 0), AutomaticSize = Enum.AutomaticSize.Y, BackgroundTransparency = 1, LayoutOrder = tabObj._colCount, Parent = cols })
-			inst("UIListLayout", { SortOrder = Enum.SortOrder.LayoutOrder, Padding = UDim.new(0, 12), Parent = colFrame })
+			local colFrame = inst("Frame", { Size = UDim2.new(0.5, -5, 0, 0), AutomaticSize = Enum.AutomaticSize.Y, BackgroundTransparency = 1, LayoutOrder = tabObj._colCount, Parent = cols })
+			inst("UIListLayout", { SortOrder = Enum.SortOrder.LayoutOrder, Padding = UDim.new(0, 10), Parent = colFrame })
 			local col = setmetatable({ _frame = colFrame, _cards = {} }, Column)
 			table.insert(tabObj._cols, col)
 			return col

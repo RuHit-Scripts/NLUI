@@ -1,6 +1,6 @@
 # NLUI
 
-Neverlose style UI library for Roblox. Dark two column layout, sidebar with grouped tabs and icons, blue switches, sliders with a value pill, Select dropdowns, keybinds. Draggable, minimizes to a floating icon so it works on mobile. No external assets, everything is drawn from frames.
+Neverlose style UI library for Roblox. Dark two column layout, sidebar with grouped tabs and Lucide icons, blue switches, sliders with a value pill, Select dropdowns, keybinds. Draggable, minimizes to a floating icon so it works on mobile. Icons come from the Lucide sprite sheet (rbxassetid), no image files to ship.
 
 ## Load
 
@@ -52,7 +52,7 @@ Methods: `win:Minimize()`, `win:Restore()`. On mobile the floating gear button r
 local tab = win:Tab(name, icon, group)
 ```
 
-`icon` is one of `crosshair mouse camera inventory gear eye sword bolt shield`. `group` is an optional sidebar header (e.g. `"Aimbot"`, `"Common"`); pass it on the first tab of each group.
+`icon` is a Lucide name, one of: `crosshair target mouse pointer camera image eye inventory box layers gear sliders sword bolt shield user list search monitor cpu radar sparkles bell lock key wifi flag gamepad bot bug pencil palette focus`. `group` is an optional sidebar header (e.g. `"Aimbot"`, `"Common"`); pass it on the first tab of each group.
 
 Each tab splits into columns:
 

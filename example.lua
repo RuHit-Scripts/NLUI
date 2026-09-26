@@ -1,11 +1,11 @@
 --[[
-	Example script using NLUI. Drop-in demo of the layout in the reference screenshot.
+	Example script using NLUI. Shows the full widget set and two column layout.
 ]]
 
 local nl = loadstring(game:HttpGet("https://raw.githubusercontent.com/RuHit-Scripts/NLUI/main/nl_ui.lua"))()
 
 local win = nl.new({
-	Nick = "brav3tungsten",
+	Nick = "player",
 	Subtext = "INF Days Left",
 	ToggleKey = Enum.KeyCode.RightShift,
 })
@@ -15,7 +15,7 @@ local legit = win:Tab("Legit", "mouse", "Aimbot")
 local visuals = win:Tab("Visuals", "camera", "Common")
 local misc = win:Tab("Miscellaneous", "gear", "Common")
 
--- Rage: two columns like the screenshot
+-- Rage: two columns
 local left = rage:column()
 local right = rage:column()
 
