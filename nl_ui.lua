@@ -130,10 +130,9 @@ function NLUI.new(opts)
 	pad(side, 6, 6, 6, 46)
 	inst("UIListLayout", { SortOrder = Enum.SortOrder.LayoutOrder, Padding = UDim.new(0, 2), Parent = side })
 
-	local body = inst("ScrollingFrame", {
+	local body = inst("Frame", {
 		Size = UDim2.new(1, -110, 1, -26), Position = UDim2.fromOffset(110, 26),
-		BackgroundTransparency = 1, BorderSizePixel = 0, ScrollBarThickness = 3,
-		AutomaticCanvasSize = Enum.AutomaticSize.Y, CanvasSize = UDim2.new(), Parent = root,
+		BackgroundTransparency = 1, BorderSizePixel = 0, Parent = root,
 	})
 	pad(body, 8, 8, 6, 8)
 	inst("UIListLayout", { SortOrder = Enum.SortOrder.LayoutOrder, Padding = UDim.new(0, 6), Parent = body })
@@ -579,15 +578,18 @@ function NLUI.new(opts)
 			Font = Enum.Font.GothamMedium, TextSize = 12, TextColor3 = COL_TEXT, TextXAlignment = Enum.TextXAlignment.Left, Text = name, Parent = tabBtn,
 		})
 
-		local page = inst("ScrollingFrame", { Size = UDim2.new(1, 0, 1, -46), BackgroundTransparency = 1, Visible = false, ScrollBarThickness = 3, CanvasSize = UDim2.new(), BorderSizePixel = 0, Parent = body })
+		local page = inst("ScrollingFrame", {
+			Size = UDim2.new(1, 0, 1, -46), BackgroundTransparency = 1, Visible = false, ScrollBarThickness = 3,
+			BorderSizePixel = 0, Parent = body, CanvasSize = UDim2.new(), AutomaticCanvasSize = Enum.AutomaticSize.Y,
+		})
 		page.LayoutOrder = order + 2
-		local cols = inst("Frame", { Size = UDim2.fromScale(1, 1), BackgroundTransparency = 1, Parent = page })
+		local cols = inst("Frame", { Size = UDim2.new(1, 0, 0, 0), AutomaticSize = Enum.AutomaticSize.Y, BackgroundTransparency = 1, Parent = page })
 		inst("UIListLayout", { FillDirection = Enum.FillDirection.Horizontal, SortOrder = Enum.SortOrder.LayoutOrder, Padding = UDim.new(0, 10), Parent = cols })
 
 		local tabObj = { _page = page, _cols = {}, _colCount = 0 }
 		function tabObj:column()
 			tabObj._colCount = tabObj._colCount + 1
-			local colFrame = inst("Frame", { Size = UDim2.fromScale(0.5, 1), BackgroundTransparency = 1, LayoutOrder = tabObj._colCount, Parent = cols })
+			local colFrame = inst("Frame", { Size = UDim2.fromScale(0.5, 0), AutomaticSize = Enum.AutomaticSize.Y, BackgroundTransparency = 1, LayoutOrder = tabObj._colCount, Parent = cols })
 			inst("UIListLayout", { SortOrder = Enum.SortOrder.LayoutOrder, Padding = UDim.new(0, 10), Parent = colFrame })
 			local col = setmetatable({ _frame = colFrame, _cards = {} }, Column)
 			table.insert(tabObj._cols, col)
