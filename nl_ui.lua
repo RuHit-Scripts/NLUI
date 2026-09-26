@@ -61,11 +61,12 @@ local function pad(o, l, r, t, b)
 	})
 end
 
-local function makeDrag(target, handle)
+local function makeDrag(target, handle, isLocked)
 	-- track press position from the handle, then move on global input so
 	-- overlapping child frames don't swallow the drag
 	local dragging, startInput, startPos = false, nil, nil
 	handle.InputBegan:Connect(function(ip)
+		if isLocked and isLocked() then return end
 		if ip.UserInputType == Enum.UserInputType.MouseButton1 or ip.UserInputType == Enum.UserInputType.Touch then
 			dragging = true
 			startInput = Vector2.new(ip.Position.X, ip.Position.Y)
@@ -107,14 +108,16 @@ function NLUI.new(opts)
 	local root = inst("Frame", {
 		Size = UDim2.fromOffset(430, 285),
 		Position = UDim2.fromScale(0.5, 0.5) - UDim2.fromOffset(215, 142),
-		BackgroundColor3 = COL_BG, BorderSizePixel = 0, ClipsDescendants = true, Parent = gui,
+		BackgroundColor3 = COL_BG, BorderSizePixel = 0, ClipsDescendants = false, Parent = gui,
 	})
-	corner(root, 8); stroke(root, COL_LINE, 1)
+	corner(root, 10); stroke(root, COL_LINE, 1)
 
 	-- top grab bar (drag handle for the whole window)
 	local grabBar = inst("TextButton", {
 		Size = UDim2.new(1, 0, 0, 26), BackgroundColor3 = COL_CARD, Text = "", AutoButtonColor = false, BorderSizePixel = 0, Parent = root, ZIndex = 3,
 	})
+	corner(grabBar, 10)
+	inst("Frame", { Size = UDim2.new(1, 0, 0, 10), Position = UDim2.new(0, 0, 1, -10), BackgroundColor3 = COL_CARD, BorderSizePixel = 0, Parent = grabBar }) -- square off bottom of the bar
 	inst("TextLabel", {
 		Size = UDim2.new(1, -16, 1, 0), Position = UDim2.fromOffset(8, 0), BackgroundTransparency = 1,
 		Font = Enum.Font.GothamBold, TextSize = 12, TextColor3 = COL_MUTED, TextXAlignment = Enum.TextXAlignment.Left,
@@ -172,28 +175,34 @@ function NLUI.new(opts)
 		Text = opts.Subtext or "Freemium", Parent = userCard, ZIndex = 6,
 	})
 
-	-- load the local player's headshot (face + neck) into the avatar circle
+	-- load the local player's headshot (face + neck). Try the thumbnail API,
+	-- fall back to GetUserThumbnail which works even when HttpGet is blocked.
+	local lp = Players.LocalPlayer
+	if not opts.Nick then nickLbl.Text = lp.DisplayName or lp.Name end
 	task.spawn(function()
-		local ok, url = pcall(function()
-			local HttpService = game:GetService("HttpService")
-			local uid = Players.LocalPlayer.UserId
-			local resp = HttpService:GetAsync(("https://thumbnails.roblox.com/v1/users/avatar-headshot?userIds=%d&size=150x150&format=Png"):format(uid))
-			local data = HttpService:JSONDecode(resp)
-			return data.data[1].imageUrl
+		local url
+		pcall(function()
+			local hs = game:GetService("HttpService")
+			local resp = hs:GetAsync(("https://thumbnails.roblox.com/v1/users/avatar-headshot?userIds=%d&size=150x150&format=Png"):format(lp.UserId))
+			url = hs:JSONDecode(resp).data[1].imageUrl
 		end)
-		if ok and type(url) == "string" then avatar.Image = url end
+		if type(url) ~= "string" then
+			pcall(function() url = lp:GetUserThumbnail(lp.UserId, Enum.ThumbnailType.HeadShot, Enum.ThumbnailSize.Size420x420) end)
+		end
+		if type(url) == "string" and url ~= "" then avatar.Image = url end
 	end)
 
-	makeDrag(root, grabBar)
-	makeDrag(root, side)
+	local locked = false
+	makeDrag(root, grabBar, function() return locked end)
+	makeDrag(root, side, function() return locked end)
 
 	local float = inst("TextButton", {
-		Size = UDim2.fromOffset(64, 28), Position = UDim2.fromScale(0.04, 0.5), BackgroundColor3 = COL_BLUE,
-		Text = "Toggle", Font = Enum.Font.GothamBold, TextSize = 13, TextColor3 = Color3.new(1, 1, 1),
+		Size = UDim2.fromOffset(70, 26), Position = UDim2.fromScale(0.04, 0.5), BackgroundColor3 = COL_BLUE,
+		Text = "Toggle", Font = Enum.Font.Code, TextSize = 15, TextColor3 = Color3.new(1, 1, 1),
 		Visible = true, BorderSizePixel = 0, Parent = gui, ZIndex = 100,
 	})
-	corner(float, 6); stroke(float, Color3.new(1, 1, 1), 1)
-	makeDrag(gui, float)
+	corner(float, 3); stroke(float, Color3.fromRGB(20, 20, 26), 2)
+	makeDrag(float, float, function() return locked end)
 
 	local minimized = false
 	local function setMin(v)
@@ -586,6 +595,33 @@ function NLUI.new(opts)
 		if order == 0 then select() end
 		return tabObj
 	end
+
+	-- ===================== built-in Settings tab =====================
+	local settings = self:Tab("Settings", "gear", "System")
+	local scol = settings:column()
+	local ssec = scol:card("Interface")
+
+	-- watermark (top-left text showing nick + status)
+	local wm = inst("TextLabel", {
+		Size = UDim2.fromOffset(300, 18), Position = UDim2.fromScale(0.02, 0.02), BackgroundTransparency = 1,
+		Font = Enum.Font.Code, TextSize = 15, TextColor3 = COL_TEXT, TextXAlignment = Enum.TextXAlignment.Left,
+		Text = (opts.Nick or lp.DisplayName or lp.Name) .. "   Freemium", Visible = true, Parent = gui, ZIndex = 99,
+	})
+
+	local uiScale = 1
+	local function applyScale(s)
+		uiScale = s
+		root.Size = UDim2.fromOffset(math.floor(430*s), math.floor(285*s))
+	end
+
+	ssec:toggle("Lock movement", false, function(v) locked = v end)
+	ssec:toggle("Watermark", true, function(v) wm.Visible = v end)
+	ssec:dropdown("Language", { "English", "Русский" }, 1, function(i, v)
+		local ru = (v == "Русский")
+		wm.Text = (opts.Nick or lp.DisplayName or lp.Name) .. "   " .. (ru and "Фримиум" or "Freemium")
+	end)
+	ssec:slider("UI size", 70, 130, 100, "%", function(v) applyScale(v/100) end)
+	ssec:keybind("Toggle key", opts.ToggleKey or Enum.KeyCode.RightShift, function() setMin(not minimized) end)
 
 	self.Minimize = function() setMin(true) end
 	self.Restore = function() setMin(false) end

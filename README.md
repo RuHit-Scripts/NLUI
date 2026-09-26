@@ -78,10 +78,20 @@ card:keybind(label, keyCode, cb)                      -> :Get()
 card:color(label, defaultColor3, cb)                  -> :Get() :Set(Color3)  -- opens an HSV picker
 ```
 
-The bottom-left card shows the local player's face (headshot from the Roblox thumbnail API), their display name and a status line. The square `Toggle` button is what you tap on mobile to open/close; drag it or the window anywhere.
+The bottom-left card shows the local player's face (headshot, with a `GetUserThumbnail` fallback if HTTP is blocked), their display name and a status line. The `Toggle` button uses a blocky Code font, sits on top of everything, and can be dragged anywhere; drag the window by its title bar or sidebar.
+
+## Built-in Settings tab
+
+Every window gets a `Settings` tab automatically with:
+
+- Lock movement - freezes dragging of the window and the Toggle button.
+- Watermark - toggles the corner text (nick + status).
+- Language - English / Русский for the watermark label.
+- UI size - scales the whole window 70-130%.
+- Toggle key - rebind open/close.
 
 ## Notes
 
 - Renders into `gethui()` when present, otherwise `PlayerGui`.
-- Toggle the whole menu with RightShift or the floating icon.
+- Toggle the whole menu with RightShift or the Toggle button.
 - Colors are set at the top of `NLUI.new`; change `COL_BLUE` to retheme the accent.
