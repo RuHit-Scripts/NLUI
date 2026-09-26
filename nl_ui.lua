@@ -603,12 +603,14 @@ function NLUI.new(opts)
 		tabBtn.MouseButton1Click:Connect(select)
 
 		table.insert(self.pages, { obj = tabObj, page = page, active = activeBg, btn = tabBtn })
-		if order == 0 then select() end
+		if not self._deferBuiltIn and not self._firstSelected then self._firstSelected = true; select() end
 		return tabObj
 	end
 
-	-- ===================== built-in Settings tab =====================
+	-- ===================== built-in Settings tab (added last, never auto-selected) =====================
+	self._deferBuiltIn = true
 	local settings = self:Tab("Settings", "gear", "System")
+	self._deferBuiltIn = false
 	local scol = settings:column()
 	local ssec = scol:card("Interface")
 
