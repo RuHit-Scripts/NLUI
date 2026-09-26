@@ -62,18 +62,21 @@ local function pad(o, l, r, t, b)
 end
 
 local function makeDrag(target, handle)
-	local dragging, startInput, startPos
+	-- track press position from the handle, then move on global input so
+	-- overlapping child frames don't swallow the drag
+	local dragging, startInput, startPos = false, nil, nil
 	handle.InputBegan:Connect(function(ip)
 		if ip.UserInputType == Enum.UserInputType.MouseButton1 or ip.UserInputType == Enum.UserInputType.Touch then
 			dragging = true
-			startInput = ip.Position
+			startInput = Vector2.new(ip.Position.X, ip.Position.Y)
 			startPos = target.Position
 		end
 	end)
 	UIS.InputChanged:Connect(function(ip)
 		if dragging and (ip.UserInputType == Enum.UserInputType.MouseMovement or ip.UserInputType == Enum.UserInputType.Touch) then
-			local d = ip.Position - startInput
-			target.Position = UDim2.new(startPos.X.Scale, startPos.X.Offset + d.X, startPos.Y.Scale, startPos.Y.Offset + d.Y)
+			local dx = ip.Position.X - startInput.X
+			local dy = ip.Position.Y - startInput.Y
+			target.Position = UDim2.new(startPos.X.Scale, startPos.X.Offset + dx, startPos.Y.Scale, startPos.Y.Offset + dy)
 		end
 	end)
 	UIS.InputEnded:Connect(function(ip)
@@ -108,14 +111,24 @@ function NLUI.new(opts)
 	})
 	corner(root, 8); stroke(root, COL_LINE, 1)
 
-	local side = inst("Frame", {
-		Size = UDim2.fromOffset(110, 1), BackgroundColor3 = COL_BG, BorderSizePixel = 0, Parent = root,
+	-- top grab bar (drag handle for the whole window)
+	local grabBar = inst("TextButton", {
+		Size = UDim2.new(1, 0, 0, 26), BackgroundColor3 = COL_CARD, Text = "", AutoButtonColor = false, BorderSizePixel = 0, Parent = root, ZIndex = 3,
 	})
-	pad(side, 6, 6, 6, 6)
+	inst("TextLabel", {
+		Size = UDim2.new(1, -16, 1, 0), Position = UDim2.fromOffset(8, 0), BackgroundTransparency = 1,
+		Font = Enum.Font.GothamBold, TextSize = 12, TextColor3 = COL_MUTED, TextXAlignment = Enum.TextXAlignment.Left,
+		Text = opts.Title or "NLUI", Parent = grabBar, ZIndex = 4,
+	})
+
+	local side = inst("Frame", {
+		Size = UDim2.new(0, 110, 1, -26), Position = UDim2.fromOffset(0, 26), BackgroundColor3 = COL_BG, BorderSizePixel = 0, Parent = root,
+	})
+	pad(side, 6, 6, 6, 46)
 	inst("UIListLayout", { SortOrder = Enum.SortOrder.LayoutOrder, Padding = UDim.new(0, 2), Parent = side })
 
 	local body = inst("ScrollingFrame", {
-		Size = UDim2.new(1, -110, 1, 0), Position = UDim2.fromOffset(110, 0),
+		Size = UDim2.new(1, -110, 1, -26), Position = UDim2.fromOffset(110, 26),
 		BackgroundTransparency = 1, BorderSizePixel = 0, ScrollBarThickness = 3,
 		AutomaticCanvasSize = Enum.AutomaticSize.Y, CanvasSize = UDim2.new(), Parent = root,
 	})
@@ -171,19 +184,20 @@ function NLUI.new(opts)
 		if ok and type(url) == "string" then avatar.Image = url end
 	end)
 
-	makeDrag(gui, root)
+	makeDrag(root, grabBar)
+	makeDrag(root, side)
 
 	local float = inst("TextButton", {
 		Size = UDim2.fromOffset(64, 28), Position = UDim2.fromScale(0.04, 0.5), BackgroundColor3 = COL_BLUE,
 		Text = "Toggle", Font = Enum.Font.GothamBold, TextSize = 13, TextColor3 = Color3.new(1, 1, 1),
-		Visible = false, BorderSizePixel = 0, Parent = gui,
+		Visible = true, BorderSizePixel = 0, Parent = gui, ZIndex = 100,
 	})
 	corner(float, 6); stroke(float, Color3.new(1, 1, 1), 1)
 	makeDrag(gui, float)
 
 	local minimized = false
 	local function setMin(v)
-		minimized = v; root.Visible = not v; float.Visible = v
+		minimized = v; root.Visible = not v
 	end
 	float.MouseButton1Click:Connect(function() setMin(not minimized) end)
 
