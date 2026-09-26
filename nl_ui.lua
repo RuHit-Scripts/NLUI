@@ -164,6 +164,10 @@ function NLUI.new(opts)
 		BorderSizePixel = 0, Image = "", ScaleType = Enum.ScaleType.Crop, Parent = userCard, ZIndex = 6,
 	})
 	corner(avatar, 15)
+	local avatarLetter = inst("TextLabel", {
+		Size = UDim2.fromScale(1, 1), BackgroundTransparency = 1, ZIndex = 7,
+		Font = Enum.Font.GothamBold, TextSize = 15, TextColor3 = COL_MUTED, Text = "?", Parent = avatar,
+	})
 	local nickLbl = inst("TextLabel", {
 		Size = UDim2.new(1, -44, 0, 16), Position = UDim2.fromOffset(40, 6), BackgroundTransparency = 1,
 		Font = Enum.Font.GothamMedium, TextSize = 12, TextColor3 = COL_TEXT, TextXAlignment = Enum.TextXAlignment.Left,
@@ -178,7 +182,9 @@ function NLUI.new(opts)
 	-- load the local player's headshot (face + neck). Try the thumbnail API,
 	-- fall back to GetUserThumbnail which works even when HttpGet is blocked.
 	local lp = Players.LocalPlayer
-	if not opts.Nick then nickLbl.Text = lp.DisplayName or lp.Name end
+	local nickName = opts.Nick or lp.DisplayName or lp.Name
+	nickLbl.Text = nickName
+	avatarLetter.Text = string.sub(nickName, 1, 1):upper()
 	task.spawn(function()
 		local url
 		pcall(function()
@@ -189,7 +195,10 @@ function NLUI.new(opts)
 		if type(url) ~= "string" then
 			pcall(function() url = lp:GetUserThumbnail(lp.UserId, Enum.ThumbnailType.HeadShot, Enum.ThumbnailSize.Size420x420) end)
 		end
-		if type(url) == "string" and url ~= "" then avatar.Image = url end
+		if type(url) == "string" and url ~= "" then
+			avatar.Image = url
+			avatarLetter.Visible = false
+		end
 	end)
 
 	local locked = false
@@ -570,15 +579,15 @@ function NLUI.new(opts)
 			Font = Enum.Font.GothamMedium, TextSize = 12, TextColor3 = COL_TEXT, TextXAlignment = Enum.TextXAlignment.Left, Text = name, Parent = tabBtn,
 		})
 
-		local page = inst("Frame", { Size = UDim2.new(1, 0, 0, 0), AutomaticSize = Enum.AutomaticSize.Y, BackgroundTransparency = 1, Visible = false, Parent = body })
+		local page = inst("ScrollingFrame", { Size = UDim2.new(1, 0, 1, -46), BackgroundTransparency = 1, Visible = false, ScrollBarThickness = 3, CanvasSize = UDim2.new(), BorderSizePixel = 0, Parent = body })
 		page.LayoutOrder = order + 2
-		local cols = inst("Frame", { Size = UDim2.new(1, 0, 0, 0), AutomaticSize = Enum.AutomaticSize.Y, BackgroundTransparency = 1, Parent = page })
+		local cols = inst("Frame", { Size = UDim2.fromScale(1, 1), BackgroundTransparency = 1, Parent = page })
 		inst("UIListLayout", { FillDirection = Enum.FillDirection.Horizontal, SortOrder = Enum.SortOrder.LayoutOrder, Padding = UDim.new(0, 10), Parent = cols })
 
 		local tabObj = { _page = page, _cols = {}, _colCount = 0 }
 		function tabObj:column()
 			tabObj._colCount = tabObj._colCount + 1
-			local colFrame = inst("Frame", { Size = UDim2.new(0.5, -5, 0, 0), AutomaticSize = Enum.AutomaticSize.Y, BackgroundTransparency = 1, LayoutOrder = tabObj._colCount, Parent = cols })
+			local colFrame = inst("Frame", { Size = UDim2.fromScale(0.5, 1), BackgroundTransparency = 1, LayoutOrder = tabObj._colCount, Parent = cols })
 			inst("UIListLayout", { SortOrder = Enum.SortOrder.LayoutOrder, Padding = UDim.new(0, 10), Parent = colFrame })
 			local col = setmetatable({ _frame = colFrame, _cards = {} }, Column)
 			table.insert(tabObj._cols, col)
@@ -601,11 +610,11 @@ function NLUI.new(opts)
 	local scol = settings:column()
 	local ssec = scol:card("Interface")
 
-	-- watermark (top-left text showing nick + status)
+	-- watermark (text showing nick + status), placed below the top row of game buttons
 	local wm = inst("TextLabel", {
-		Size = UDim2.fromOffset(300, 18), Position = UDim2.fromScale(0.02, 0.02), BackgroundTransparency = 1,
+		Size = UDim2.fromOffset(300, 18), Position = UDim2.new(0, 10, 0, 64), BackgroundTransparency = 1,
 		Font = Enum.Font.Code, TextSize = 15, TextColor3 = COL_TEXT, TextXAlignment = Enum.TextXAlignment.Left,
-		Text = (opts.Nick or lp.DisplayName or lp.Name) .. "   Freemium", Visible = true, Parent = gui, ZIndex = 99,
+		Text = nickName .. "   Freemium", Visible = true, Parent = gui, ZIndex = 99,
 	})
 
 	local uiScale = 1
@@ -618,7 +627,7 @@ function NLUI.new(opts)
 	ssec:toggle("Watermark", true, function(v) wm.Visible = v end)
 	ssec:dropdown("Language", { "English", "Русский" }, 1, function(i, v)
 		local ru = (v == "Русский")
-		wm.Text = (opts.Nick or lp.DisplayName or lp.Name) .. "   " .. (ru and "Фримиум" or "Freemium")
+		wm.Text = nickName .. "   " .. (ru and "Фримиум" or "Freemium")
 	end)
 	ssec:slider("UI size", 70, 130, 100, "%", function(v) applyScale(v/100) end)
 	ssec:keybind("Toggle key", opts.ToggleKey or Enum.KeyCode.RightShift, function() setMin(not minimized) end)
