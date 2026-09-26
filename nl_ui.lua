@@ -102,88 +102,90 @@ function NLUI.new(opts)
 	})
 
 	local root = inst("Frame", {
-		Size = UDim2.fromOffset(680, 430),
-		Position = UDim2.fromScale(0.5, 0.5) - UDim2.fromOffset(340, 215),
+		Size = UDim2.fromOffset(430, 285),
+		Position = UDim2.fromScale(0.5, 0.5) - UDim2.fromOffset(215, 142),
 		BackgroundColor3 = COL_BG, BorderSizePixel = 0, ClipsDescendants = true, Parent = gui,
 	})
-	corner(root, 10); stroke(root, COL_LINE, 1)
+	corner(root, 8); stroke(root, COL_LINE, 1)
 
 	local side = inst("Frame", {
-		Size = UDim2.fromOffset(160, 1), BackgroundColor3 = COL_BG, BorderSizePixel = 0, Parent = root,
+		Size = UDim2.fromOffset(110, 1), BackgroundColor3 = COL_BG, BorderSizePixel = 0, Parent = root,
 	})
-	pad(side, 10, 10, 10, 10)
-	inst("UIListLayout", { SortOrder = Enum.SortOrder.LayoutOrder, Padding = UDim.new(0, 3), Parent = side })
+	pad(side, 6, 6, 6, 6)
+	inst("UIListLayout", { SortOrder = Enum.SortOrder.LayoutOrder, Padding = UDim.new(0, 2), Parent = side })
 
 	local body = inst("ScrollingFrame", {
-		Size = UDim2.new(1, -160, 1, 0), Position = UDim2.fromOffset(160, 0),
-		BackgroundTransparency = 1, BorderSizePixel = 0, ScrollBarThickness = 4,
+		Size = UDim2.new(1, -110, 1, 0), Position = UDim2.fromOffset(110, 0),
+		BackgroundTransparency = 1, BorderSizePixel = 0, ScrollBarThickness = 3,
 		AutomaticCanvasSize = Enum.AutomaticSize.Y, CanvasSize = UDim2.new(), Parent = root,
 	})
-	pad(body, 12, 12, 10, 12)
-	inst("UIListLayout", { SortOrder = Enum.SortOrder.LayoutOrder, Padding = UDim.new(0, 8), Parent = body })
+	pad(body, 8, 8, 6, 8)
+	inst("UIListLayout", { SortOrder = Enum.SortOrder.LayoutOrder, Padding = UDim.new(0, 6), Parent = body })
 
-	local headerSlot = inst("Frame", { Size = UDim2.new(1, 0, 0, 40), BackgroundTransparency = 1, Parent = body })
-	inst("UIListLayout", { FillDirection = Enum.FillDirection.Horizontal, VerticalAlignment = Enum.VerticalAlignment.Center, SortOrder = Enum.SortOrder.LayoutOrder, Padding = UDim.new(0, 8), Parent = headerSlot })
+	local headerSlot = inst("Frame", { Size = UDim2.new(1, 0, 0, 26), BackgroundTransparency = 1, Parent = body })
+	inst("UIListLayout", { FillDirection = Enum.FillDirection.Horizontal, VerticalAlignment = Enum.VerticalAlignment.Center, SortOrder = Enum.SortOrder.LayoutOrder, Padding = UDim.new(0, 6), Parent = headerSlot })
 	local configBtn = inst("TextButton", {
-		Size = UDim2.fromOffset(180, 34), BackgroundColor3 = COL_CARD, Text = "", AutoButtonColor = false, BorderSizePixel = 0, Parent = headerSlot,
+		Size = UDim2.fromOffset(120, 22), BackgroundColor3 = COL_CARD, Text = "", AutoButtonColor = false, BorderSizePixel = 0, Parent = headerSlot,
 	})
-	corner(configBtn, 8); stroke(configBtn, COL_LINE, 1)
+	corner(configBtn, 6); stroke(configBtn, COL_LINE, 1)
 	inst("TextLabel", {
-		Size = UDim2.new(1, -40, 1, 0), Position = UDim2.fromOffset(12, 0), BackgroundTransparency = 1,
-		Font = Enum.Font.GothamMedium, TextSize = 14, TextColor3 = COL_TEXT, TextXAlignment = Enum.TextXAlignment.Left,
+		Size = UDim2.new(1, -24, 1, 0), Position = UDim2.fromOffset(8, 0), BackgroundTransparency = 1,
+		Font = Enum.Font.GothamMedium, TextSize = 12, TextColor3 = COL_TEXT, TextXAlignment = Enum.TextXAlignment.Left,
 		Text = "My Config", Parent = configBtn,
 	})
 	inst("TextLabel", {
-		Size = UDim2.fromOffset(20, 34), AnchorPoint = Vector2.new(1, 0), Position = UDim2.new(1, -10, 0, 0),
-		BackgroundTransparency = 1, Font = Enum.Font.GothamBold, TextSize = 16, TextColor3 = COL_MUTED, Text = ">", Parent = configBtn,
-	})
-	inst("TextButton", {
-		Size = UDim2.fromOffset(34, 34), AnchorPoint = Vector2.new(1, 0), Position = UDim2.new(1, 0, 0, 3),
-		BackgroundTransparency = 1, Text = "\u{1F50D}", Font = Enum.Font.GothamBold, TextSize = 16,
-		TextColor3 = COL_TEXT, AutoButtonColor = false, BorderSizePixel = 0, Parent = headerSlot,
+		Size = UDim2.fromOffset(14, 22), AnchorPoint = Vector2.new(1, 0), Position = UDim2.new(1, -6, 0, 0),
+		BackgroundTransparency = 1, Font = Enum.Font.GothamBold, TextSize = 13, TextColor3 = COL_MUTED, Text = ">", Parent = configBtn,
 	})
 
 	local userCard = inst("Frame", {
-		Size = UDim2.new(1, -24, 0, 56), Position = UDim2.new(0, 12, 1, -68), BackgroundColor3 = COL_CARD,
+		Size = UDim2.new(1, -12, 0, 40), Position = UDim2.new(0, 6, 1, -46), BackgroundColor3 = COL_CARD,
 		BorderSizePixel = 0, Parent = side, ZIndex = 5,
 	})
-	corner(userCard, 10); stroke(userCard, COL_LINE, 1); userCard.LayoutOrder = 999
+	corner(userCard, 8); stroke(userCard, COL_LINE, 1); userCard.LayoutOrder = 999
 	local avatar = inst("ImageLabel", {
-		Size = UDim2.fromOffset(40, 40), Position = UDim2.fromOffset(8, 8), BackgroundColor3 = COL_PILL,
-		BorderSizePixel = 0, Image = opts.Avatar or "", ScaleType = Enum.ScaleType.Crop, Parent = userCard, ZIndex = 6,
+		Size = UDim2.fromOffset(30, 30), Position = UDim2.fromOffset(5, 5), BackgroundColor3 = COL_PILL,
+		BorderSizePixel = 0, Image = "", ScaleType = Enum.ScaleType.Crop, Parent = userCard, ZIndex = 6,
 	})
-	corner(avatar, 20)
-	inst("TextLabel", {
-		Size = UDim2.new(1, -70, 0, 20), Position = UDim2.fromOffset(56, 10), BackgroundTransparency = 1,
-		Font = Enum.Font.GothamMedium, TextSize = 14, TextColor3 = COL_TEXT, TextXAlignment = Enum.TextXAlignment.Left,
-		Text = opts.Nick or "user", Parent = userCard, ZIndex = 6,
-	})
-	inst("TextLabel", {
-		Size = UDim2.new(1, -70, 0, 16), Position = UDim2.fromOffset(56, 30), BackgroundTransparency = 1,
-		Font = Enum.Font.Gotham, TextSize = 12, TextColor3 = COL_BLUE, TextXAlignment = Enum.TextXAlignment.Left,
-		Text = opts.Subtext or "INF Days Left", Parent = userCard, ZIndex = 6,
+	corner(avatar, 15)
+	local nickLbl = inst("TextLabel", {
+		Size = UDim2.new(1, -44, 0, 16), Position = UDim2.fromOffset(40, 6), BackgroundTransparency = 1,
+		Font = Enum.Font.GothamMedium, TextSize = 12, TextColor3 = COL_TEXT, TextXAlignment = Enum.TextXAlignment.Left,
+		Text = opts.Nick or "player", Parent = userCard, ZIndex = 6,
 	})
 	inst("TextLabel", {
-		Size = UDim2.fromOffset(16, 56), AnchorPoint = Vector2.new(1, 0), Position = UDim2.new(1, -10, 0, 0),
-		BackgroundTransparency = 1, Font = Enum.Font.GothamBold, TextSize = 16, TextColor3 = COL_MUTED,
-		Text = ">", Parent = userCard, ZIndex = 6,
+		Size = UDim2.new(1, -44, 0, 14), Position = UDim2.fromOffset(40, 22), BackgroundTransparency = 1,
+		Font = Enum.Font.Gotham, TextSize = 11, TextColor3 = COL_BLUE, TextXAlignment = Enum.TextXAlignment.Left,
+		Text = opts.Subtext or "Freemium", Parent = userCard, ZIndex = 6,
 	})
+
+	-- load the local player's headshot (face + neck) into the avatar circle
+	task.spawn(function()
+		local ok, url = pcall(function()
+			local HttpService = game:GetService("HttpService")
+			local uid = Players.LocalPlayer.UserId
+			local resp = HttpService:GetAsync(("https://thumbnails.roblox.com/v1/users/avatar-headshot?userIds=%d&size=150x150&format=Png"):format(uid))
+			local data = HttpService:JSONDecode(resp)
+			return data.data[1].imageUrl
+		end)
+		if ok and type(url) == "string" then avatar.Image = url end
+	end)
 
 	makeDrag(gui, root)
 
 	local float = inst("TextButton", {
-		Size = UDim2.fromOffset(50, 50), Position = UDim2.fromScale(0.04, 0.5), BackgroundColor3 = COL_BLUE,
-		Text = "\u{2699}", Font = Enum.Font.GothamBold, TextSize = 22, TextColor3 = Color3.new(1, 1, 1),
+		Size = UDim2.fromOffset(64, 28), Position = UDim2.fromScale(0.04, 0.5), BackgroundColor3 = COL_BLUE,
+		Text = "Toggle", Font = Enum.Font.GothamBold, TextSize = 13, TextColor3 = Color3.new(1, 1, 1),
 		Visible = false, BorderSizePixel = 0, Parent = gui,
 	})
-	corner(float, 25); stroke(float, Color3.new(1, 1, 1), 1.5)
+	corner(float, 6); stroke(float, Color3.new(1, 1, 1), 1)
 	makeDrag(gui, float)
 
 	local minimized = false
 	local function setMin(v)
 		minimized = v; root.Visible = not v; float.Visible = v
 	end
-	float.MouseButton1Click:Connect(function() setMin(false) end)
+	float.MouseButton1Click:Connect(function() setMin(not minimized) end)
 
 	local toggleKey = opts.ToggleKey or Enum.KeyCode.RightShift
 	UIS.InputBegan:Connect(function(ip)
@@ -429,6 +431,81 @@ function NLUI.new(opts)
 		return { Get = function() return cur end }
 	end
 
+	function W.color(parent, label, def, cb)
+		def = def or Color3.fromRGB(255, 255, 255)
+		local col = Color3.new(def.R, def.G, def.B)
+		local r = rowBase(parent, 36)
+		inst("TextLabel", {
+			Size = UDim2.new(1, -60, 1, 0), BackgroundTransparency = 1, Font = Enum.Font.GothamMedium,
+			TextSize = 14, TextColor3 = COL_TEXT, TextXAlignment = Enum.TextXAlignment.Left, Text = label, Parent = r,
+		})
+		local swatch = inst("TextButton", {
+			Size = UDim2.fromOffset(34, 22), AnchorPoint = Vector2.new(1, 0.5), Position = UDim2.new(1, 0, 0.5, 0),
+			BackgroundColor3 = col, Text = "", AutoButtonColor = false, BorderSizePixel = 0, Parent = r,
+		})
+		corner(swatch, 5); stroke(swatch, COL_LINE, 1)
+
+		local pop = inst("Frame", {
+			Size = UDim2.fromOffset(150, 150), Visible = false, ZIndexBehavior = Enum.ZIndexBehavior.Sibling,
+			BackgroundColor3 = COL_CARD, BorderSizePixel = 0, Parent = gui,
+		})
+		corner(pop, 8); stroke(pop, COL_LINE, 1); pop.ZIndex = 50
+		pad(pop, 8, 8, 8, 8)
+		local area = inst("TextButton", {
+			Size = UDim2.new(1, 0, 0, 90), BackgroundColor3 = Color3.fromHSV(col.H, 1, 1), Text = "", AutoButtonColor = false, BorderSizePixel = 0, Parent = pop,
+		})
+		corner(area, 4); area.ZIndex = 51
+		local satGrad = inst("UIGradient", { Transparency = NumberSequence.new({NumberSequenceKeypoint.new(0,0),NumberSequenceKeypoint.new(1,1)}), Rotation = 90, Parent = area })
+		local valGrad = inst("UIGradient", { Color = ColorSequence.new(Color3.new(0,0,0)), Parent = area })
+		local areaDot = inst("Frame", { Size = UDim2.fromOffset(6,6), AnchorPoint = Vector2.new(0.5,0.5), BackgroundColor3 = Color3.new(1,1,1), BorderSizePixel = 0, Parent = area }); corner(areaDot,3); areaDot.ZIndex=52
+		local hueBar = inst("TextButton", {
+			Size = UDim2.new(1, 0, 0, 12), Position = UDim2.new(0, 0, 1, -20), Text = "", AutoButtonColor = false, BorderSizePixel = 0, Parent = pop,
+		})
+		corner(hueBar, 4); hueBar.ZIndex = 51
+		inst("UIGradient", { Color = ColorSequence.new({
+			ColorSequenceKeypoint.new(0.00, Color3.fromRGB(255,0,0)), ColorSequenceKeypoint.new(0.17, Color3.fromRGB(255,255,0)),
+			ColorSequenceKeypoint.new(0.33, Color3.fromRGB(0,255,0)), ColorSequenceKeypoint.new(0.50, Color3.fromRGB(0,255,255)),
+			ColorSequenceKeypoint.new(0.67, Color3.fromRGB(0,0,255)), ColorSequenceKeypoint.new(0.83, Color3.fromRGB(255,0,255)),
+			ColorSequenceKeypoint.new(1.00, Color3.fromRGB(255,0,0)),
+		}), Parent = hueBar })
+		local hueDot = inst("Frame", { Size = UDim2.fromOffset(2,12), BackgroundColor3 = Color3.new(1,1,1), BorderSizePixel = 0, Parent = hueBar }); hueDot.ZIndex=52
+
+		local function apply(h, s, v)
+			col = Color3.fromHSV(h, s, v)
+			swatch.BackgroundColor3 = col
+			area.BackgroundColor3 = Color3.fromHSV(h, 1, 1)
+			if cb then pcall(cb, col) end
+		end
+		local function placeArea(x, y)
+			local sx = math.clamp((x - area.AbsolutePosition.X)/area.AbsoluteSize.X, 0, 1)
+			local sy = math.clamp((y - area.AbsolutePosition.Y)/area.AbsoluteSize.Y, 0, 1)
+			areaDot.Position = UDim2.fromScale(sx, sy)
+			apply(col.H, sx, 1 - sy)
+		end
+		local function placeHue(x)
+			local h = math.clamp((x - hueBar.AbsolutePosition.X)/hueBar.AbsoluteSize.X, 0, 1)
+			hueDot.Position = UDim2.new(h, -1, 0, 0)
+			apply(h, (areaDot.AbsolutePosition.X-area.AbsolutePosition.X)/area.AbsoluteSize.X, 1-((areaDot.AbsolutePosition.Y-area.AbsolutePosition.Y)/area.AbsoluteSize.Y))
+		end
+		local dragA, dragH = false, false
+		area.InputBegan:Connect(function(ip) if ip.UserInputType==Enum.UserInputType.MouseButton1 or ip.UserInputType==Enum.UserInputType.Touch then dragA=true; placeArea(ip.Position.X,ip.Position.Y) end end)
+		hueBar.InputBegan:Connect(function(ip) if ip.UserInputType==Enum.UserInputType.MouseButton1 or ip.UserInputType==Enum.UserInputType.Touch then dragH=true; placeHue(ip.Position.X) end end)
+		UIS.InputChanged:Connect(function(ip)
+			if ip.UserInputType==Enum.UserInputType.MouseMovement or ip.UserInputType==Enum.UserInputType.Touch then
+				if dragA then placeArea(ip.Position.X,ip.Position.Y) elseif dragH then placeHue(ip.Position.X) end
+			end
+		end)
+		UIS.InputEnded:Connect(function(ip) if ip.UserInputType==Enum.UserInputType.MouseButton1 or ip.UserInputType==Enum.UserInputType.Touch then dragA=false; dragH=false end end)
+		swatch.MouseButton1Click:Connect(function()
+			pop.Visible = not pop.Visible
+			if pop.Visible then
+				local ap = swatch.AbsolutePosition
+				pop.Position = UDim2.fromOffset(ap.x - 120, ap.y + 26)
+			end
+		end)
+		return { Set = function(_, c) apply(c.H, c.S, c.V) end, Get = function() return col end }
+	end
+
 	local Column = {}
 	Column.__index = Column
 
@@ -455,19 +532,19 @@ function NLUI.new(opts)
 		end
 
 		local tabBtn = inst("TextButton", {
-			Size = UDim2.new(1, 0, 0, 34), BackgroundColor3 = COL_BG, Text = "", AutoButtonColor = false, BorderSizePixel = 0, LayoutOrder = order + 1, Parent = side,
+			Size = UDim2.new(1, 0, 0, 26), BackgroundColor3 = COL_BG, Text = "", AutoButtonColor = false, BorderSizePixel = 0, LayoutOrder = order + 1, Parent = side,
 		})
-		corner(tabBtn, 7)
+		corner(tabBtn, 6)
 		local activeBg = inst("Frame", { Size = UDim2.fromScale(1, 1), BackgroundColor3 = COL_ROW, BorderSizePixel = 0, Visible = false, Parent = tabBtn })
-		corner(activeBg, 7)
+		corner(activeBg, 6)
 		local iconImg = inst("ImageLabel", {
-			Size = UDim2.fromOffset(16, 16), Position = UDim2.fromOffset(10, 9), BackgroundTransparency = 1,
+			Size = UDim2.fromOffset(14, 14), Position = UDim2.fromOffset(7, 6), BackgroundTransparency = 1,
 			ImageColor3 = COL_TEXT, ScaleType = Enum.ScaleType.Fit, Parent = tabBtn,
 		})
-		setIcon(iconImg, icon, 16)
+		setIcon(iconImg, icon, 14)
 		inst("TextLabel", {
-			Size = UDim2.new(1, -44, 1, 0), Position = UDim2.fromOffset(34, 0), BackgroundTransparency = 1,
-			Font = Enum.Font.GothamMedium, TextSize = 14, TextColor3 = COL_TEXT, TextXAlignment = Enum.TextXAlignment.Left, Text = name, Parent = tabBtn,
+			Size = UDim2.new(1, -34, 1, 0), Position = UDim2.fromOffset(28, 0), BackgroundTransparency = 1,
+			Font = Enum.Font.GothamMedium, TextSize = 12, TextColor3 = COL_TEXT, TextXAlignment = Enum.TextXAlignment.Left, Text = name, Parent = tabBtn,
 		})
 
 		local page = inst("Frame", { Size = UDim2.new(1, 0, 0, 0), AutomaticSize = Enum.AutomaticSize.Y, BackgroundTransparency = 1, Visible = false, Parent = body })

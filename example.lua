@@ -25,6 +25,7 @@ main:toggle("Silent Aim", true)
 main:toggle("Automatic Fire", true)
 main:toggle("Aim Through Walls", true)
 main:slider("Field of View", 1, 180, 75, "\u{00B0}")
+main:color("Modulate", Color3.fromRGB(255, 60, 60))
 
 local selection = left:card("Selection")
 selection:select("Target")

@@ -75,7 +75,10 @@ card:dropdown(label, options, startIndex, cb)         -> :Get()
 card:select(label, cb)                                -- a "Select >" row
 card:multiselect(label, options, defaults, cb)        -> :Get()
 card:keybind(label, keyCode, cb)                      -> :Get()
+card:color(label, defaultColor3, cb)                  -> :Get() :Set(Color3)  -- opens an HSV picker
 ```
+
+The bottom-left card shows the local player's face (headshot from the Roblox thumbnail API), their display name and a status line. The square `Toggle` button is what you tap on mobile to open/close; drag it or the window anywhere.
 
 ## Notes
 
